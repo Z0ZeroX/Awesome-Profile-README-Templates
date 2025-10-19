@@ -308,11 +308,322 @@ async function openTemplate(templateId) {
         previewContent.innerHTML = '<div class="error-message">Failed to load template content</div>';
         return;
     }
+
+    // Render preview using GitHub API with isolated styling
+    await renderGitHubStylePreview(content, previewContent);
     
-    previewContent.innerHTML = marked.parse(content);
+    // Update code tab
     codeElement.textContent = content;
     codeElement.className = 'language-markdown';
     hljs.highlightElement(codeElement);
+}
+
+async function renderGitHubStylePreview(markdownContent, container) {
+    try {
+        // Try GitHub API first
+        const renderedHtml = await renderWithGitHubAPI(markdownContent);
+        if (renderedHtml) {
+            createIsolatedPreview(renderedHtml, container);
+            return;
+        }
+    } catch (error) {
+        console.warn('GitHub API failed, using fallback:', error);
+    }
+    
+    // Fallback to local rendering with GitHub styles
+    const localHtml = marked.parse(markdownContent);
+    createIsolatedPreview(localHtml, container);
+}
+
+async function renderWithGitHubAPI(markdownContent) {
+    try {
+        const response = await fetch('https://api.github.com/markdown', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: markdownContent,
+                mode: 'markdown'
+            })
+        });
+        
+        if (response.ok) {
+            return await response.text();
+        } else if (response.status === 403) {
+            console.warn('GitHub API rate limit exceeded');
+            return null;
+        } else {
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('GitHub API request failed:', error);
+        return null;
+    }
+}
+
+function createIsolatedPreview(htmlContent, container) {
+    // Create iframe for complete CSS isolation
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = 'none';
+    iframe.style.backgroundColor = '#ffffff';
+    iframe.sandbox = 'allow-scripts allow-same-origin';
+    
+    // GitHub-authentic CSS styles
+    const githubStyles = `
+        <style>
+            body {
+                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+                font-size: 16px;
+                line-height: 1.5;
+                color: #1f2328;
+                background-color: #ffffff;
+                margin: 0;
+                padding: 16px;
+                word-wrap: break-word;
+            }
+            
+            .markdown-body {
+                box-sizing: border-box;
+                min-width: 200px;
+                max-width: 980px;
+                margin: 0 auto;
+            }
+            
+            /* Headers */
+            h1, h2, h3, h4, h5, h6 {
+                margin-top: 24px;
+                margin-bottom: 16px;
+                font-weight: 600;
+                line-height: 1.25;
+                color: #1f2328;
+            }
+            
+            h1 {
+                font-size: 2em;
+                border-bottom: 1px solid #d0d7de;
+                padding-bottom: .3em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+                border-bottom: 1px solid #d0d7de;
+                padding-bottom: .3em;
+            }
+            
+            h3 { font-size: 1.25em; }
+            h4 { font-size: 1em; }
+            h5 { font-size: .875em; }
+            h6 { font-size: .85em; color: #656d76; }
+            
+            /* Paragraphs and text */
+            p {
+                margin-top: 0;
+                margin-bottom: 16px;
+            }
+            
+            /* Links */
+            a {
+                color: #0969da;
+                text-decoration: none;
+            }
+            
+            a:hover {
+                text-decoration: underline;
+            }
+            
+            /* Images */
+            img {
+                max-width: 100%;
+                height: auto;
+                border-style: none;
+                box-sizing: content-box;
+            }
+            
+            /* Code */
+            code, tt {
+                padding: .2em .4em;
+                margin: 0;
+                font-size: 85%;
+                white-space: break-spaces;
+                background-color: rgba(175,184,193,0.2);
+                border-radius: 6px;
+                font-family: ui-monospace,SFMono-Regular,"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+            }
+            
+            pre {
+                padding: 16px;
+                overflow: auto;
+                font-size: 85%;
+                line-height: 1.45;
+                color: #1f2328;
+                background-color: #f6f8fa;
+                border-radius: 6px;
+                word-wrap: normal;
+                margin-top: 0;
+                margin-bottom: 16px;
+            }
+            
+            pre code {
+                padding: 0;
+                margin: 0;
+                background: transparent;
+                border: 0;
+                white-space: pre;
+                word-break: normal;
+                word-wrap: normal;
+            }
+            
+            /* Blockquotes */
+            blockquote {
+                padding: 0 1em;
+                color: #656d76;
+                border-left: .25em solid #d0d7de;
+                margin: 0 0 16px 0;
+            }
+            
+            /* Lists */
+            ul, ol {
+                margin-top: 0;
+                margin-bottom: 16px;
+                padding-left: 2em;
+            }
+            
+            li + li {
+                margin-top: .25em;
+            }
+            
+            /* Tables */
+            table {
+                border-spacing: 0;
+                border-collapse: collapse;
+                margin-top: 0;
+                margin-bottom: 16px;
+                width: max-content;
+                max-width: 100%;
+                overflow: auto;
+            }
+            
+            table th,
+            table td {
+                padding: 6px 13px;
+                border: 1px solid #d0d7de;
+            }
+            
+            table th {
+                background-color: #f6f8fa;
+                font-weight: 600;
+            }
+            
+            table tr {
+                background-color: #ffffff;
+                border-top: 1px solid #d0d7de;
+            }
+            
+            table tr:nth-child(2n) {
+                background-color: #f6f8fa;
+            }
+            
+            /* Horizontal rules */
+            hr {
+                height: .25em;
+                padding: 0;
+                margin: 24px 0;
+                background-color: #d0d7de;
+                border: 0;
+            }
+            
+            /* Task lists */
+            input[type="checkbox"] {
+                margin: 0 .2em .25em -1.4em;
+                vertical-align: middle;
+            }
+            
+            /* Badges and shields */
+            .badge, .shield {
+                display: inline-block;
+                margin: 2px;
+            }
+            
+            /* Center align common elements */
+            p:has(img[src*="shields.io"]),
+            p:has(img[src*="badge"]),
+            div[align="center"],
+            h1[align="center"],
+            h2[align="center"],
+            h3[align="center"] {
+                text-align: center;
+            }
+            
+            /* Custom GitHub profile elements */
+            .github-profile-trophy,
+            .github-readme-stats,
+            .github-readme-streak-stats {
+                display: block;
+                margin: 16px auto;
+                max-width: 100%;
+            }
+        </style>
+    `;
+    
+    iframe.onload = function() {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Template Preview</title>
+                ${githubStyles}
+            </head>
+            <body>
+                <div class="markdown-body">
+                    ${htmlContent}
+                </div>
+                <script>
+                    // Handle iframe height adjustment
+                    function adjustHeight() {
+                        const height = document.body.scrollHeight;
+                        window.parent.postMessage({type: 'resize', height: height}, '*');
+                    }
+                    
+                    // Initial adjustment
+                    setTimeout(adjustHeight, 100);
+                    
+                    // Adjust on image load
+                    document.querySelectorAll('img').forEach(img => {
+                        img.onload = adjustHeight;
+                        img.onerror = adjustHeight;
+                    });
+                    
+                    // Handle clicks on links
+                    document.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            window.open(this.href, '_blank');
+                        });
+                    });
+                </script>
+            </body>
+            </html>
+        `);
+        doc.close();
+    };
+    
+    // Handle iframe height messages
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'resize' && event.source === iframe.contentWindow) {
+            iframe.style.height = Math.min(event.data.height + 20, 800) + 'px';
+        }
+    });
+    
+    container.innerHTML = '';
+    container.appendChild(iframe);
 }
 
 function closeModal() {
@@ -405,6 +716,17 @@ function setupEventListeners() {
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeModal();
     });
+    
+    // Scroll to top button functionality
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
 }
 
 function resetFilters() {
@@ -483,4 +805,11 @@ function closeContributeModal() {
         modal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
+}
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }

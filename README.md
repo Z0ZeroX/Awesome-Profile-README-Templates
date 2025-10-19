@@ -15,25 +15,36 @@ Don't forget to hit the ⭐ if you like this repo.
 
 ---
 
-## 📂 Template Categories
+<details>
+  <summary>
+  
+## 📂 Category Overview
 
-| Category | Icon | Description | Folder | Examples |
-|----------|------|-------------|--------|----------|
-| **Creative & Artistic** | 🎨 | Artistic designs, animations, visual creativity | `creative-artistic/` | [Browse →](./templates/creative-artistic/) |
-| **Code-Focused** | 💻 | Code-heavy, development themes, tech implementations | `code-focused/` | [Browse →](./templates/code-focused/) |
-| **Dynamic & Interactive** | ⚡ | Real-time updates, interactive elements, games | `dynamic-interactive/` | [Browse →](./templates/dynamic-interactive/) |
-| **Minimalistic** | 🎯 | Clean, simple, elegant designs | `minimalistic/` | [Browse →](./templates/minimalistic/) |
-| **Data & Visual** | 📊 | Charts, graphs, statistics, data visualization | `data-visual/` | [Browse →](./templates/data-visual/) |
-| **Media-Rich** | 🖼️ | Images, GIFs, visual storytelling | `media-rich/` | [Browse →](./templates/media-rich/) |
-| **Badges & Icons** | 🏆 | Skill badges, technology icons, achievements | `badges-icons/` | [Browse →](./templates/badges-icons/) |
-| **Showcase Collections** | ✨ | Comprehensive, all-in-one templates | `showcase-collections/` | [Browse →](./templates/showcase-collections/) |
-| **Others** | 📦 | Experimental, unique, uncategorized | `others/` | [Browse →](./templates/others/) |
+  </summary>
+
+| Category | Icon | Best For | Key Features |
+|----------|------|----------|--------------|
+| Creative & Artistic | 🎨 | Designers, Artists | Animations, Custom Fonts, Visual Art |
+| Code-Focused | 💻 | Developers, Programmers | Code snippets, GitHub Actions, Tech-heavy |
+| Dynamic & Interactive | ⚡ | Engagement-focused | Real-time updates, Games, Interactive elements |
+| Minimalistic | 🎯 | Simplicity lovers | Clean, Simple, Elegant designs |
+| Data & Visual | 📊 | Data-driven profiles | Charts, Graphs, Statistics, Infographics |
+| Media-Rich | 🖼️ | Visual storytellers | Images, GIFs, Rich media content |
+| Badges & Icons | 🏆 | Skill showcasing | Badges, Icons, Achievement displays |
+| Showcase Collections | ✨ | Comprehensive profiles | All-in-one, Feature-rich templates |
+| Others | 📦 | Unique/Experimental | Uncategorized, Mixed styles |
 
 > 🔍 **Need help choosing?** Check our [Category Guide](docs/TEMPLATE_GUIDE.md) for detailed descriptions and decision tree.
 
 ---
+</details>
 
+<details>
+  <summary>
+    
 ## 🚀 Quick Start
+
+  </summary>
 
 1. **Browse categories** - Find the style that matches your personality
 2. **Choose a template** - Pick from our organized collection
@@ -44,18 +55,7 @@ Don't forget to hit the ⭐ if you like this repo.
 > 📖 **Need detailed help?** Check out our [comprehensive documentation](docs/) for step-by-step guides, customization tips, and advanced features.
 
 ---
-
-## 🛠️ Resources
-
-- 🌐 **[Project Website](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates)** - Browse templates with live preview
-- 📚 **[Documentation](docs/)** - Complete guides and tutorials
-- 📁 **[Browse Templates](templates/)** - Explore all template categories
-- 🎨 **[Tools & Generators](docs/TOOLS.md)** - Helpful tools for creating your profile
-- 💡 **[Best Practices](docs/BEST_PRACTICES.md)** - Tips for an amazing profile
-- 🌟 **[Featured Profiles](docs/FEATURED.md)** - Inspiring examples from the community
-- 🤝 **[Contributing Guidelines](CONTRIBUTING.md)** - How to add your templates and contribute
-
----
+</details>
 
 ## 🤝 Contributing
 
@@ -75,10 +75,15 @@ We welcome all types of contributions! Here's how you can help:
 
 Read our [Contributing Guidelines](CONTRIBUTING.md) for detailed information.
 
-**Every contribution matters!** 🙌
+
+**Every contribution matters! 🙌**
 ---
 
+<details>
+  <summary>
+
 ## 📊 Repository Stats
+  </summary>
 
 - **9 Main Categories** + Others for complete coverage
 - **Organized structure** with clear folder hierarchy  
@@ -88,10 +93,25 @@ Read our [Contributing Guidelines](CONTRIBUTING.md) for detailed information.
 - **Self-contained templates** - no external dependencies required
 
 ---
+</details>
 
-## Special Thanks 🙇
-- [User-name](https://github.com/) for making the amazing site for this repo!
+<details>
+  <summary>
+
+## 🛠️ Resources
+
+  </summary>
+
+- 🌐 **[Project Website](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates)** - Browse templates with live preview
+- 📚 **[Documentation](docs/)** - Complete guides and tutorials
+- 📁 **[Browse Templates](templates/)** - Explore all template categories
+- 🎨 **[Tools & Generators](docs/TOOLS.md)** - Helpful tools for creating your profile
+- 💡 **[Best Practices](docs/BEST_PRACTICES.md)** - Tips for an amazing profile
+- 🌟 **[Featured Profiles](docs/FEATURED.md)** - Inspiring examples from the community
+- 🤝 **[Contributing Guidelines](CONTRIBUTING.md)** - How to add your templates and contribute
+
 ---
+</details>
 
 ## 📄 License
 

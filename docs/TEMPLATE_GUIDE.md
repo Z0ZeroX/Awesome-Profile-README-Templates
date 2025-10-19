@@ -8,7 +8,7 @@ This guide helps you understand how to choose the right category and submit your
 
 ## 📋 Table of Contents
 
-- [Category Overview](#category-overview)
+- [Template Categories](#template-categories)
 - [Folder Structure](#folder-structure)
 - [Detailed Category Descriptions](#detailed-category-descriptions)
 - [How to Choose a Category](#how-to-choose-a-category)
@@ -39,19 +39,19 @@ Each folder contains `username.md` files with complete README templates.
 
 ---
 
-## Category Overview
+## Template Categories
 
-| Category | Icon | Best For | Key Features |
-|----------|------|----------|--------------|
-| Creative & Artistic | 🎨 | Designers, Artists | Animations, Custom Fonts, Visual Art |
-| Code-Focused | 💻 | Developers, Programmers | Code snippets, GitHub Actions, Tech-heavy |
-| Dynamic & Interactive | ⚡ | Engagement-focused | Real-time updates, Games, Interactive elements |
-| Minimalistic | 🎯 | Simplicity lovers | Clean, Simple, Elegant designs |
-| Data & Visual | 📊 | Data-driven profiles | Charts, Graphs, Statistics, Infographics |
-| Media-Rich | 🖼️ | Visual storytellers | Images, GIFs, Rich media content |
-| Badges & Icons | 🏆 | Skill showcasing | Badges, Icons, Achievement displays |
-| Showcase Collections | ✨ | Comprehensive profiles | All-in-one, Feature-rich templates |
-| Others | 📦 | Unique/Experimental | Uncategorized, Mixed styles |
+| Category | Icon | Description | Folder | Examples |
+|----------|------|-------------|--------|----------|
+| **Creative & Artistic** | 🎨 | Artistic designs, animations, visual creativity | `creative-artistic/` | [Browse →](./templates/creative-artistic/) |
+| **Code-Focused** | 💻 | Code-heavy, development themes, tech implementations | `code-focused/` | [Browse →](./templates/code-focused/) |
+| **Dynamic & Interactive** | ⚡ | Real-time updates, interactive elements, games | `dynamic-interactive/` | [Browse →](./templates/dynamic-interactive/) |
+| **Minimalistic** | 🎯 | Clean, simple, elegant designs | `minimalistic/` | [Browse →](./templates/minimalistic/) |
+| **Data & Visual** | 📊 | Charts, graphs, statistics, data visualization | `data-visual/` | [Browse →](./templates/data-visual/) |
+| **Media-Rich** | 🖼️ | Images, GIFs, visual storytelling | `media-rich/` | [Browse →](./templates/media-rich/) |
+| **Badges & Icons** | 🏆 | Skill badges, technology icons, achievements | `badges-icons/` | [Browse →](./templates/badges-icons/) |
+| **Showcase Collections** | ✨ | Comprehensive, all-in-one templates | `showcase-collections/` | [Browse →](./templates/showcase-collections/) |
+| **Others** | 📦 | Experimental, unique, uncategorized | `others/` | [Browse →](./templates/others/) |
 
 ---
 

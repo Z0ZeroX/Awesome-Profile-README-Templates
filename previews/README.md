@@ -7,7 +7,7 @@ This directory contains optional preview images for templates in the repository.
 ## 📸 Image Guidelines (Optional)
 
 ### Requirements
-- **Format:** PNG or JPG
+- **Format:** PNG
 - **Dimensions:** 1200x600px (recommended)
 - **File Size:** Under 500KB
 - **Quality:** High resolution, clear and readable
@@ -125,4 +125,4 @@ For preview image help (optional):
 
 **Priority: Great templates > Preview images** 🎯
 
-Thank you for contributing awesome templates! �
+Thank you for contributing awesome templates!

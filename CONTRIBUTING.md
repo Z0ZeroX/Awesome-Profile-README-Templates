@@ -7,20 +7,25 @@ Please [open a pull request](https://github.com/Z0ZeroX/Awesome-Github-Profile-R
 This is a curated list so the goal is not to collect all possible resources but collect the ones which are most helpful, provide a unique perspective, or are of special significance.
 
 ---
+<details>
+  <summary>
 
 ## 📋 Table of Contents
 
+  </summary>
+
+
 - [How to contribute Templates](#how-to-contribute)
 - [Other Ways to Contribute](#-other-ways-to-contribute)
-- [Template Categories](./docs/TEMPLATE_GUIDE.md#category-overview)
+- [Category Overview](README.md#category-overview)
 - [Folder Structure](./docs/TEMPLATE_GUIDE.md#folder-structure)
 - [How to Choose a Category](./docs/TEMPLATE_GUIDE.md#how-to-choose-a-category)
 - [Template Quality Guidelines](#-template-quality-guidelines)
 - [Community Guidelines](#-community-guidelines)
 - [Need Help](#-need-help)
 
-
 ---
+</details>
 
 ## How to contribute Templates:
 
@@ -52,10 +57,26 @@ Example: `templates/minimalistic/johndoe.md`
 - **Step 6:** Copy and Paste your GitHub profile readme content in the new file. Put file in templates
 
 - **Step 7:** At the end of your template file add the following content with appropriate changes:
+- **Step 7:** At the end of your template file add the following content with appropriate changes. You can copy the snippet below and paste it at the end of your template file (replace the bracketed values):
 
-  - Add line break using this command `------`
-  - Credit: `[Your GitHub Username](https://github.com/your-username)`
-  - Last Edited on: Date when you edited this file. The date must be in DD/MM/YYYY format.
+```markdown
+------
+Credit: [Your GitHub Username](https://github.com/your-username)
+Last Edited on: 18/10/2025
+```
+
+Replace `Your GitHub Username`, the URL, and the date with your own values. The date must be in DD/MM/YYYY format.
+
+### 7.5 (Optional): Add a preview image
+
+You may include a preview image (screenshot) of your template so others can quickly see how it looks. For detailed guidance (naming, sizing, where to place images, and example paths) please refer to `previews/README.md`.
+
+Short summary:
+- Recommended naming: `category-username.png` (for example `minimalistic-johndoe.png`).
+- Recommended location (in-repo): `previews/category-username.png` with a relative path from your template (for example `../../previews/minimalistic-johndoe.png`).
+- External hosting (not recommended): a direct URL to the image.
+
+If you include a preview, mention it in your PR description.
 
 - **Step 8:** Update the main README.md table if adding a new category or if your template should be the featured example for an existing category.
 
@@ -75,8 +96,12 @@ Example: `templates/minimalistic/johndoe.md`
 - **Step 12:** All Done! Thank you for contributing! 🎉
 
 ---
+<details>
+  <summary>
 
 ## 🌟 Other Ways to Contribute
+
+  </summary>
 
 Beyond submitting templates, there are many ways to help improve this project:
 
@@ -141,6 +166,14 @@ Beyond submitting templates, there are many ways to help improve this project:
 **Remember:** Every contribution matters, no matter how small! 🙌
 
 ---
+</details>
+
+<details>
+  <summary>
+
+## 🌟 Template Quality Guidelines
+
+  </summary>
 
 ### ✅ What we look for:
 - **Unique design** - Offers something new or improved
@@ -158,6 +191,8 @@ Beyond submitting templates, there are many ways to help improve this project:
 - Templates requiring external image hosting
 - Poor documentation or unclear instructions
 - Templates that don't fit any category clearly
+
+</details>
 
 ## 🤝 Community Guidelines
 
