@@ -3,7 +3,7 @@ name: Update Templates Metadata
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
     paths:
       - 'templates/**/*.md'
   workflow_dispatch:
