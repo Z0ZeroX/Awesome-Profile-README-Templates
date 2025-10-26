@@ -2,7 +2,7 @@
 
 Inspiring examples from the community that showcase excellent GitHub profile READMEs.
 
-🌐 **Browse all templates**: [Project Website](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates) - Explore our complete collection with live previews
+🌐 **Browse all templates**: [Project Website](https://z0zerox.github.io/Awesome-Profile-README-Templates) - Explore our complete collection with live previews
 
 ---
 

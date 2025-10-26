@@ -2,7 +2,7 @@
 
 Welcome to the list of awesome GitHub profile readme templates and thanks for considering to contribute. Contributions are welcome so we can tap into the collection of best Github profile readmes' in one place.
 
-Please [open a pull request](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/pulls) if you would like to contribute new or improve existing readme. If you would like to comment on or discuss content but don't have concrete changes yet, please [open an issue](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/issues).
+Please [open a pull request](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/pulls) if you would like to contribute new or improve existing readme. If you would like to comment on or discuss content but don't have concrete changes yet, please [open an issue](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues).
 
 This is a curated list so the goal is not to collect all possible resources but collect the ones which are most helpful, provide a unique perspective, or are of special significance.
 
@@ -149,7 +149,7 @@ Beyond submitting templates, there are many ways to help improve this project:
 
 ### 🚀 How to Get Started with Other Contributions:
 
-1. **Join the discussion** - Participate in [GitHub Discussions](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/discussions)
+1. **Join the discussion** - Participate in [GitHub Discussions](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/discussions)
 2. **Check open issues** - Look for issues labeled `help wanted`, `good first issue`, or `enhancement`
 3. **Propose new ideas** - Open an issue to discuss your contribution idea
 4. **Start small** - Begin with documentation fixes or small improvements
@@ -207,8 +207,8 @@ Beyond submitting templates, there are many ways to help improve this project:
 - Check our [Template Guide](./docs/) for detailed category descriptions
 - Review [existing templates](./templates/) for examples and inspiration
 - Use our [Category Decision Tree](./docs/TEMPLATE_GUIDE.md#category-decision-tree) to choose the right category
-- Ask questions in [GitHub Issues](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/issues)
-- Join discussions in [GitHub Discussions](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/discussions)
+- Ask questions in [GitHub Issues](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues)
+- Join discussions in [GitHub Discussions](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/discussions)
 
 ### 📁 File Naming Convention:
 - Use your GitHub username: `username.md`

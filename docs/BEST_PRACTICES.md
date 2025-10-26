@@ -2,7 +2,7 @@
 
 Create an outstanding GitHub profile that effectively showcases your skills and personality.
 
-🌐 **Get inspired**: Browse our [template collection](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates) for ideas and examples
+🌐 **Get inspired**: Browse our [template collection](https://z0zerox.github.io/Awesome-Profile-README-Templates) for ideas and examples
 
 ---
 
@@ -204,7 +204,7 @@ Create an outstanding GitHub profile that effectively showcases your skills and 
 
 ## 🌟 Inspiration Sources
 
-- Browse our [template collection](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates)
+- Browse our [template collection](https://z0zerox.github.io/Awesome-Profile-README-Templates)
 - Check featured profiles in [FEATURED.md](FEATURED.md)
 - Follow trending GitHub profiles
 - Study profiles of developers you admire

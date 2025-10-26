@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-10-07
 
 ### Added
-- Project website integration: https://z0zerox.github.io/Awesome-Github-Profile-README-Templates
+- Project website integration: https://z0zerox.github.io/Awesome-Profile-README-Templates
 - Website badge in README.md header section
 - Prominent website links across all documentation files
 - Comprehensive Tools & Resources guide (TOOLS.md)

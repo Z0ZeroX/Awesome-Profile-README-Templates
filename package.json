@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates.git"
+    "url": "git+https://github.com/Z0ZeroX/Awesome-Profile-README-Templates.git"
   },
   "keywords": [
     "github",
@@ -26,9 +26,9 @@
   "author": "Z0ZeroX",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/issues"
+    "url": "https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues"
   },
-  "homepage": "https://Z0ZeroX.github.io/Awesome-Github-Profile-README-Templates",
+  "homepage": "https://Z0ZeroX.github.io/Awesome-Profile-README-Templates",
   "devDependencies": {},
   "dependencies": {}
 }

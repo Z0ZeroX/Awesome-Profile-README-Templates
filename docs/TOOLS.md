@@ -2,7 +2,7 @@
 
 This page contains helpful tools, generators, and resources to help you create an amazing GitHub profile README.
 
-🌐 **Browse all templates**: [Project Website](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates) - Live preview of all templates
+🌐 **Browse all templates**: [Project Website](https://z0zerox.github.io/Awesome-Profile-README-Templates) - Live preview of all templates
 
 ---
 

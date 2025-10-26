@@ -2,7 +2,7 @@
 
 This guide helps you understand how to choose the right category and submit your GitHub Profile README template as a `username.md` file.
 
-🌐 **Browse templates with live preview**: [https://z0zerox.github.io/Awesome-Github-Profile-README-Templates](https://z0zerox.github.io/Awesome-Github-Profile-README-Templates)
+🌐 **Browse templates with live preview**: [https://z0zerox.github.io/Awesome-Profile-README-Templates](https://z0zerox.github.io/Awesome-Profile-README-Templates)
 
 ---
 

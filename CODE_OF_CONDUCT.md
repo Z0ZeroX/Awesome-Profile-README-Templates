@@ -42,7 +42,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ### 📞 Reporting Guidelines
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement by opening an issue in this repository's Issues tab: [Issues](https://github.com/Z0ZeroX/Awesome-Github-Profile-README-Templates/issues).
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement by opening an issue in this repository's Issues tab: [Issues](https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues).
 
 When reporting, please include:
 - **What happened** - A clear description of the incident
