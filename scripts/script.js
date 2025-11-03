@@ -1,340 +1,410 @@
-const CONFIG = {
-    metadataUrl: './templates-metadata.json',
-    previewsPath: './previews',
-    templatesPath: './templates',
-    pageSize: 24,
-    cacheKey: 'templates_cache',
-    cacheDuration: 3600000,
+// App State
+let templates = [];
+let filteredTemplates = [];
+let metadata = null;
+let currentFilters = {
+    search: '',
+    category: 'all',
+    tags: []
 };
 
-const categoryConfig = {
-    'badges-icons': { name: '🏷️ Badges & Icons', emoji: '🏷️' },
-    'code-focused': { name: '💻 Code Focused', emoji: '💻' },
-    'creative-artistic': { name: '🎨 Creative & Artistic', emoji: '🎨' },
-    'data-visual': { name: '📊 Data & Visual', emoji: '📊' },
-    'dynamic-interactive': { name: '⚡ Dynamic & Interactive', emoji: '⚡' },
-    'media-rich': { name: '🎬 Media Rich', emoji: '🎬' },
-    'minimalistic': { name: '🎯 Minimalistic', emoji: '🎯' },
-    'showcase-collections': { name: '✨ Showcase Collections', emoji: '✨' },
-    'others': { name: '🔧 Others', emoji: '🔧' }
-};
+// DOM Elements
+const templatesGrid = document.getElementById('templatesGrid');
+const searchInput = document.getElementById('searchInput');
+const categoryFilter = document.getElementById('categoryFilter');
+const resetFiltersBtn = document.getElementById('resetFilters');
+const themeToggle = document.getElementById('themeToggle');
+const templateModal = document.getElementById('templateModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalClose = document.getElementById('modalClose');
+const noResults = document.getElementById('noResults');
+const resultsCount = document.getElementById('resultsCount');
 
-const state = {
-    metadata: null,
-    templates: [],
-    filteredTemplates: [],
-    currentFilter: 'all',
-    searchTerm: '',
-    currentPage: 0,
-    isLoading: false,
-    templateContents: {},
-    hasMore: true
-};
-
-document.addEventListener('DOMContentLoaded', async () => {
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    loadTemplates();
     setupEventListeners();
-    await loadMetadata();
-    setupIntersectionObserver();
 });
 
-async function loadMetadata() {
-    const loadingElement = document.getElementById('templatesGrid');
-    loadingElement.innerHTML = '<div class="loading">⚡ Loading templates metadata...</div>';
-    
-    try {
-        const cached = getCachedMetadata();
-        if (cached) {
-            state.metadata = cached;
-        } else {
-            const response = await fetch(CONFIG.metadataUrl);
-            if (!response.ok) throw new Error('Failed to fetch metadata');
-            
-            state.metadata = await response.json();
-            cacheMetadata(state.metadata);
-        }
-        
-        processMetadata();
-        updateFilterButtons();
-        updateStats();
-        renderTemplates();
-        
-    } catch (error) {
-        console.error('Error loading metadata:', error);
-        loadingElement.innerHTML = `
-            <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                <h3>❌ Error Loading Templates</h3>
-                <p>Unable to load templates metadata.</p>
-                <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 16px;">
-                    🔄 Reload Page
-                </button>
-            </div>
-        `;
-    }
+// Theme Management
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 }
 
-function processMetadata() {
-    state.templates = [];
-    const categories = state.metadata.categories || state.metadata;
-    
-    Object.entries(categories).forEach(([categoryKey, data]) => {
-        const files = data.files || data;
-        const categoryInfo = categoryConfig[categoryKey] || { name: categoryKey, emoji: '📁' };
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+// Load Templates
+async function loadTemplates() {
+    try {
+        showLoading();
+        const response = await fetch('data/templates.json');
+        metadata = await response.json();
         
-        files.forEach(filename => {
-            const templateId = filename.replace('.md', '');
-            const author = templateId.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            
-            state.templates.push({
-                id: `${categoryKey}-${templateId}`,
-                filename,
-                category: categoryKey,
-                categoryName: categoryInfo.name,
-                categoryEmoji: categoryInfo.emoji,
-                author,
-                name: `${categoryInfo.emoji} ${author}`,
-                previewImage: `${CONFIG.previewsPath}/${categoryKey}-${templateId}.png`,
-                filePath: `${CONFIG.templatesPath}/${categoryKey}/${filename}`,
+        // Flatten templates from categories structure
+        templates = [];
+        if (metadata.categories) {
+            Object.entries(metadata.categories).forEach(([category, data]) => {
+                data.templates.forEach(template => {
+                    templates.push({
+                        ...template,
+                        category: category
+                    });
+                });
             });
-        });
-    });
-    
-    state.filteredTemplates = [...state.templates];
-}
-
-function getCachedMetadata() {
-    try {
-        const cached = sessionStorage.getItem(CONFIG.cacheKey);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CONFIG.cacheDuration) {
-                return data;
-            }
         }
-    } catch (e) {
-        console.warn('Cache read error:', e);
-    }
-    return null;
-}
-
-function cacheMetadata(data) {
-    try {
-        sessionStorage.setItem(CONFIG.cacheKey, JSON.stringify({
-            data,
-            timestamp: Date.now()
-        }));
-    } catch (e) {
-        console.warn('Cache write error:', e);
-    }
-}
-
-function applyFilters() {
-    let filtered = state.templates;
-    
-    if (state.currentFilter !== 'all') {
-        filtered = filtered.filter(t => t.category === state.currentFilter);
-    }
-    
-    if (state.searchTerm) {
-        const searchLower = state.searchTerm.toLowerCase();
-        filtered = filtered.filter(t => 
-            t.name.toLowerCase().includes(searchLower) ||
-            t.author.toLowerCase().includes(searchLower) ||
-            t.category.toLowerCase().includes(searchLower)
-        );
-    }
-    
-    state.filteredTemplates = filtered;
-    state.currentPage = 0;
-    state.hasMore = true;
-}
-
-function renderTemplates(append = false) {
-    const grid = document.getElementById('templatesGrid');
-    
-    if (append) {
-        state.isLoading = true;
-        document.getElementById('loadMoreTrigger')?.remove();
-    }
-    
-    if (!append) {
-        grid.innerHTML = '';
-        state.currentPage = 0;
-    }
-    
-    if (state.filteredTemplates.length === 0) {
-        grid.innerHTML = `
-            <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-                <h3>🔍 No templates found</h3>
-                <p>Try adjusting your search or filter criteria.</p>
-                <button onclick="resetFilters()" class="btn btn-primary" style="margin-top: 16px;">
-                    Clear Filters
-                </button>
-            </div>
-        `;
-        state.isLoading = false;
-        return;
-    }
-    
-    const startIdx = state.currentPage * CONFIG.pageSize;
-    const endIdx = Math.min(startIdx + CONFIG.pageSize, state.filteredTemplates.length);
-    const pageTemplates = state.filteredTemplates.slice(startIdx, endIdx);
-    
-    const templatesHTML = pageTemplates.map(createTemplateCard).join('');
-    
-    if (append) {
-        grid.insertAdjacentHTML('beforeend', templatesHTML);
-    } else {
-        grid.innerHTML = templatesHTML;
-    }
-    
-    state.currentPage++;
-    state.hasMore = endIdx < state.filteredTemplates.length;
-    state.isLoading = false;
-    
-    if (state.hasMore) {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.id = 'loadMoreTrigger';
-        loadingDiv.style.cssText = 'grid-column: 1 / -1; height: 100px; display: flex; align-items: center; justify-content: center;';
-        loadingDiv.innerHTML = '<div class="loading">Loading more...</div>';
-        grid.appendChild(loadingDiv);
         
-        setTimeout(() => {
-            const trigger = document.getElementById('loadMoreTrigger');
-            if (trigger && window.scrollObserver) {
-                window.scrollObserver.observe(trigger);
-            }
-        }, 100);
+        filteredTemplates = [...templates];
+        
+        // Populate category filter
+        populateCategoryFilter();
+        
+        renderTemplates();
+        updateTemplateCount();
+        updateResultsInfo();
+    } catch (error) {
+        console.error('Error loading templates:', error);
+        showError('Failed to load templates. Please try again later.');
     }
 }
 
-function createTemplateCard(template) {
-    const fallbackImg = './previews/default-preview.svg';
+// Populate category filter from metadata
+function populateCategoryFilter() {
+    if (!metadata || !metadata.categories) return;
     
-    return `
-        <div class="template-card" onclick="openTemplate('${template.id}')">
-            <div class="category">${template.categoryName}</div>
-            <div class="template-preview-image">
-                <img src="${template.previewImage}" 
-                     alt="${template.name}" 
-                     loading="lazy"
-                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin: 12px 0;"
-                     onerror="this.src='${fallbackImg}'">
-            </div>
-            <div class="template-meta">
-                <span class="author">👤 ${template.author}</span>
-            </div>
-            <div class="template-actions">
-                <button class="btn btn-primary" onclick="event.stopPropagation(); openTemplate('${template.id}')">
-                    👁️ Preview
-                </button>
-                <button class="btn btn-secondary" onclick="event.stopPropagation(); downloadTemplate('${template.id}')">
-                    💾 Download
-                </button>
-            </div>
+    // Clear existing options except "All Categories"
+    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+    
+    // Add category options with counts
+    Object.entries(metadata.categories).forEach(([category, data]) => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = `${formatCategoryName(category)} (${data.count})`;
+        categoryFilter.appendChild(option);
+    });
+}
+
+// Format category name for display
+function formatCategoryName(category) {
+    const icons = {
+        'badges-icons': '🏆',
+        'code-focused': '💻',
+        'creative-artistic': '🎨',
+        'data-visual': '📊',
+        'dynamic-interactive': '⚡',
+        'media-rich': '🖼️',
+        'minimalistic': '🎯',
+        'showcase-collections': '✨',
+        'others': '📦'
+    };
+    
+    const icon = icons[category] || '📄';
+    const name = category.split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+    
+    return `${icon} ${name}`;
+}
+
+// Show loading state
+function showLoading() {
+    templatesGrid.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading awesome templates...</p>
         </div>
     `;
 }
 
-function setupIntersectionObserver() {
-    window.scrollObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && state.hasMore && !state.isLoading) {
-                renderTemplates(true);
+// Update results info
+function updateResultsInfo() {
+    if (resultsCount) {
+        const total = templates.length;
+        const showing = filteredTemplates.length;
+        
+        if (showing === total) {
+            resultsCount.textContent = `Showing all ${total} templates`;
+        } else {
+            resultsCount.textContent = `Showing ${showing} of ${total} templates`;
+        }
+    }
+}
+
+// Render Templates
+function renderTemplates() {
+    if (filteredTemplates.length === 0) {
+        templatesGrid.innerHTML = '';
+        noResults.style.display = 'block';
+        updateResultsInfo();
+        return;
+    }
+    
+    noResults.style.display = 'none';
+    
+    templatesGrid.innerHTML = filteredTemplates.map(template => {
+        // Use default preview if preview_url is false
+        const previewImage = template.preview_url && template.preview_url !== 'false' && template.preview_url !== false
+            ? template.preview_url
+            : 'previews/default-preview.svg';
+        
+        const templateId = `${template.category}-${template.username}`;
+        
+        return `
+            <div class="template-card" data-username="${template.username}" data-category="${template.category}">
+                <div class="template-category-badge">${formatCategoryName(template.category)}</div>
+                <div class="template-preview-image">
+                    <img 
+                        src="${previewImage}" 
+                        alt="${template.username} preview"
+                        loading="lazy"
+                        onerror="this.src='previews/default-preview.svg'"
+                    >
+                </div>
+                <div class="template-content">
+                    <div class="template-header">
+                        <h3 class="template-title">${escapeHtml(template.username)}</h3>
+                    </div>
+                    
+                    <div class="template-tags">
+                        ${template.tags && template.tags.length > 0 
+                            ? template.tags.slice(0, 6).map(tag => 
+                                `<span class="template-tag" onclick="event.stopPropagation(); addTagFilter('${escapeHtml(tag)}')" title="Filter by ${escapeHtml(tag)}">#${escapeHtml(tag)}</span>`
+                            ).join('') 
+                            : '<span class="template-tag" style="opacity: 0.5;">#template</span>'}
+                    </div>
+                    
+                    <div class="template-footer">
+                        <div class="template-difficulty">
+                            <span class="difficulty-dot difficulty-intermediate"></span>
+                            <span>${formatCategoryName(template.category).split(' ').slice(1).join(' ')}</span>
+                        </div>
+                        <div class="template-actions">
+                            <button class="template-action" onclick="event.stopPropagation(); viewTemplate('${template.username}', '${template.category}')" title="Preview Template">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            <button class="template-action" onclick="event.stopPropagation(); downloadTemplate('${template.username}', '${template.category}')" title="Download Markdown">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    updateResultsInfo();
+    
+    // Add click event to cards
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.template-actions') && !e.target.closest('.template-tag')) {
+                const username = card.dataset.username;
+                const category = card.dataset.category;
+                viewTemplate(username, category);
             }
         });
-    }, {
-        rootMargin: '200px'
+    });
+}
+
+// Filter Templates
+function filterTemplates() {
+    filteredTemplates = templates.filter(template => {
+        // Search filter
+        const searchMatch = !currentFilters.search || 
+            template.username.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+            template.category.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+            (template.tags && template.tags.some(tag => tag.toLowerCase().includes(currentFilters.search.toLowerCase())));
+        
+        // Category filter
+        const categoryMatch = currentFilters.category === 'all' || 
+            template.category === currentFilters.category;
+        
+        // Tags filter
+        const tagsMatch = currentFilters.tags.length === 0 ||
+            (template.tags && currentFilters.tags.every(tag => 
+                template.tags.some(t => t.toLowerCase() === tag.toLowerCase())
+            ));
+        
+        return searchMatch && categoryMatch && tagsMatch;
     });
     
-    const observeLoadingTrigger = () => {
-        const trigger = document.getElementById('loadMoreTrigger');
-        if (trigger) {
-            window.scrollObserver.observe(trigger);
-        } else {
-            setTimeout(observeLoadingTrigger, 100);
-        }
-    };
-    
-    observeLoadingTrigger();
+    renderTemplates();
+    updateActiveTags();
 }
 
-async function loadTemplateContent(templateId) {
-    if (state.templateContents[templateId]) {
-        return state.templateContents[templateId];
+// Update Active Tags Display
+function updateActiveTags() {
+    const activeTagsContainer = document.getElementById('activeTags');
+    if (!activeTagsContainer) return;
+    
+    if (currentFilters.tags.length === 0) {
+        activeTagsContainer.innerHTML = '';
+        activeTagsContainer.style.display = 'none';
+        return;
     }
     
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) return null;
+    activeTagsContainer.style.display = 'flex';
+    activeTagsContainer.innerHTML = currentFilters.tags.map(tag => `
+        <span class="tag">
+            #${escapeHtml(tag)}
+            <span class="tag-remove" onclick="removeTagFilter('${escapeHtml(tag)}')">&times;</span>
+        </span>
+    `).join('');
+}
+
+// Add Tag Filter
+function addTagFilter(tag) {
+    if (!currentFilters.tags.includes(tag)) {
+        currentFilters.tags.push(tag);
+        filterTemplates();
+        showNotification(`Filtered by #${tag}`);
+    }
+}
+
+// Remove Tag Filter
+function removeTagFilter(tag) {
+    currentFilters.tags = currentFilters.tags.filter(t => t !== tag);
+    filterTemplates();
+}
+
+// Reset Filters
+function resetFilters() {
+    currentFilters = {
+        search: '',
+        category: 'all',
+        tags: []
+    };
+    searchInput.value = '';
+    categoryFilter.value = 'all';
+    filterTemplates();
+    showNotification('Filters reset');
+}
+
+// View Template Details with GitHub API Rendering
+async function viewTemplate(username, category) {
+    const template = templates.find(t => t.username === username && t.category === category);
+    if (!template) return;
     
     try {
-        const response = await fetch(template.filePath);
-        if (!response.ok) throw new Error('Failed to fetch template');
+        const filePath = `templates/${category}/${username}.md`;
+        const response = await fetch(filePath);
+        const markdown = await response.text();
         
-        const content = await response.text();
-        state.templateContents[templateId] = content;
-        return content;
+        const previewContent = document.getElementById('previewContent');
+        const codeContent = document.getElementById('codeContent');
+        
+        // Update modal title
+        const modalTitle = document.getElementById('modalTitle');
+        if (modalTitle) {
+            modalTitle.innerHTML = `
+                ${escapeHtml(template.username)}
+                <div style="font-size: 0.875rem; font-weight: 400; opacity: 0.8; margin-top: 4px;">
+                    ${formatCategoryName(template.category)}
+                </div>
+            `;
+        }
+        
+        // Show loading state
+        if (previewContent) {
+            previewContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading preview...</p></div>';
+        }
+        
+        if (codeContent) {
+            const codeElement = codeContent.querySelector('#rawCode');
+            if (codeElement) {
+                codeElement.textContent = markdown;
+                // Apply syntax highlighting if available
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightElement(codeElement);
+                }
+            }
+        }
+        
+        openModal();
+        
+        // Render preview using GitHub API
+        if (previewContent) {
+            await renderGitHubStylePreview(markdown, previewContent, template);
+        }
+        
     } catch (error) {
-        console.error(`Error loading template ${templateId}:`, error);
-        return null;
+        console.error('Error loading template details:', error);
+        showError('Failed to load template details.');
     }
 }
 
-async function openTemplate(templateId) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) {
-        alert('Template not found');
-        return;
-    }
+// Render preview using GitHub API (like script.js)
+async function renderGitHubStylePreview(markdownContent, container, template) {
+    // Create wrapper div with template details
+    const wrapperDiv = document.createElement('div');
+    wrapperDiv.className = 'template-preview-wrapper';
     
-    const modal = document.getElementById('templateModal');
-    document.getElementById('modalTitle').innerHTML = `
-        ${template.name}
-        <div class="modal-subtitle">by ${template.author} • ${template.categoryName}</div>
+    // Add template header and meta info
+    const headerHTML = `  
+        <!-- <div class="template-meta" style="display: flex; flex-wrap: wrap; gap: 1rem; margin: 0; padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">
+            <div class="meta-item" style="flex: 1;">
+                <strong style="color: var(--text-primary);">Tags:</strong> 
+                ${template.tags && template.tags.length > 0 
+                    ? template.tags.map(tag => `<span class="template-tag" style="cursor: default;">#${escapeHtml(tag)}</span>`).join('')
+                    : '<span style="opacity: 0.5; color: var(--text-secondary);">No tags</span>'}
+            </div>
+        </div> -->
     `;
     
-    const previewContent = document.getElementById('previewContent');
-    const codeElement = document.getElementById('rawCode');
+    wrapperDiv.innerHTML = headerHTML;
     
-    previewContent.innerHTML = '<div class="loading">Loading template...</div>';
-    codeElement.textContent = 'Loading...';
+    // Create preview container for markdown
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'markdown-preview-container';
+    wrapperDiv.appendChild(previewContainer);
     
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    switchTab('preview');
+    container.innerHTML = '';
+    container.appendChild(wrapperDiv);
     
-    const content = await loadTemplateContent(templateId);
-    
-    if (!content) {
-        previewContent.innerHTML = '<div class="error-message">Failed to load template content</div>';
-        return;
-    }
-
-    // Render preview using GitHub API with isolated styling
-    await renderGitHubStylePreview(content, previewContent);
-    
-    // Update code tab
-    codeElement.textContent = content;
-    codeElement.className = 'language-markdown';
-    hljs.highlightElement(codeElement);
-}
-
-async function renderGitHubStylePreview(markdownContent, container) {
     try {
         // Try GitHub API first
         const renderedHtml = await renderWithGitHubAPI(markdownContent);
         if (renderedHtml) {
-            createIsolatedPreview(renderedHtml, container);
+            createIsolatedPreview(renderedHtml, previewContainer, template);
             return;
         }
     } catch (error) {
         console.warn('GitHub API failed, using fallback:', error);
     }
     
-    // Fallback to local rendering with GitHub styles
-    const localHtml = marked.parse(markdownContent);
-    createIsolatedPreview(localHtml, container);
+    // Fallback to local rendering with marked.js
+    try {
+        if (typeof marked !== 'undefined') {
+            const localHtml = marked.parse(markdownContent);
+            createIsolatedPreview(localHtml, previewContainer, template);
+        } else {
+            // Simple fallback if marked.js not available
+            previewContainer.innerHTML = `
+                <div style="padding: 16px; background: var(--bg-secondary); border-radius: 8px;">
+                    <pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0; color: var(--text-primary);">${escapeHtml(markdownContent)}</pre>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Fallback rendering failed:', error);
+        previewContainer.innerHTML = '<div class="error-message" style="padding: 20px; text-align: center; color: #ef4444;">Failed to render preview</div>';
+    }
 }
 
+// Render with GitHub API
 async function renderWithGitHubAPI(markdownContent) {
     try {
         const response = await fetch('https://api.github.com/markdown', {
@@ -363,95 +433,53 @@ async function renderWithGitHubAPI(markdownContent) {
     }
 }
 
-function createIsolatedPreview(htmlContent, container) {
-    // Create iframe for complete CSS isolation
+// Create isolated preview iframe (like script.js)
+function createIsolatedPreview(htmlContent, container, template) {
     const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '600px';
-    iframe.style.border = 'none';
-    iframe.style.backgroundColor = '#ffffff';
+    iframe.style.cssText = 'width: 100%; border: none; background-color: #ffffff; min-height: 600px;';
     iframe.sandbox = 'allow-scripts allow-same-origin';
     
     // GitHub-authentic CSS styles
     const githubStyles = `
         <style>
             body {
-                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;
                 font-size: 16px;
                 line-height: 1.5;
                 color: #1f2328;
                 background-color: #ffffff;
                 margin: 0;
-                padding: 16px;
+                padding: 24px;
                 word-wrap: break-word;
             }
             
-            .markdown-body {
-                box-sizing: border-box;
-                min-width: 200px;
-                max-width: 980px;
-                margin: 0 auto;
-            }
+            .markdown-body { max-width: 980px; margin: 0 auto; }
             
-            /* Headers */
             h1, h2, h3, h4, h5, h6 {
                 margin-top: 24px;
                 margin-bottom: 16px;
                 font-weight: 600;
                 line-height: 1.25;
-                color: #1f2328;
             }
             
-            h1 {
-                font-size: 2em;
-                border-bottom: 1px solid #d0d7de;
-                padding-bottom: .3em;
-            }
-            
-            h2 {
-                font-size: 1.5em;
-                border-bottom: 1px solid #d0d7de;
-                padding-bottom: .3em;
-            }
-            
+            h1 { font-size: 2em; border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+            h2 { font-size: 1.5em; border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
             h3 { font-size: 1.25em; }
-            h4 { font-size: 1em; }
-            h5 { font-size: .875em; }
-            h6 { font-size: .85em; color: #656d76; }
             
-            /* Paragraphs and text */
-            p {
-                margin-top: 0;
-                margin-bottom: 16px;
-            }
+            p { margin-top: 0; margin-bottom: 16px; }
             
-            /* Links */
-            a {
-                color: #0969da;
-                text-decoration: none;
-            }
+            a { color: #0969da; text-decoration: none; }
+            a:hover { text-decoration: underline; }
             
-            a:hover {
-                text-decoration: underline;
-            }
+            img { max-width: 100%; height: auto; box-sizing: content-box; }
             
-            /* Images */
-            img {
-                max-width: 100%;
-                height: auto;
-                border-style: none;
-                box-sizing: content-box;
-            }
-            
-            /* Code */
-            code, tt {
+            code {
                 padding: .2em .4em;
                 margin: 0;
                 font-size: 85%;
-                white-space: break-spaces;
                 background-color: rgba(175,184,193,0.2);
                 border-radius: 6px;
-                font-family: ui-monospace,SFMono-Regular,"SF Mono",Consolas,"Liberation Mono",Menlo,monospace;
+                font-family: ui-monospace,SFMono-Regular,Consolas,monospace;
             }
             
             pre {
@@ -459,25 +487,13 @@ function createIsolatedPreview(htmlContent, container) {
                 overflow: auto;
                 font-size: 85%;
                 line-height: 1.45;
-                color: #1f2328;
                 background-color: #f6f8fa;
                 border-radius: 6px;
-                word-wrap: normal;
-                margin-top: 0;
                 margin-bottom: 16px;
             }
             
-            pre code {
-                padding: 0;
-                margin: 0;
-                background: transparent;
-                border: 0;
-                white-space: pre;
-                word-break: normal;
-                word-wrap: normal;
-            }
+            pre code { padding: 0; background: transparent; }
             
-            /* Blockquotes */
             blockquote {
                 padding: 0 1em;
                 color: #656d76;
@@ -485,49 +501,22 @@ function createIsolatedPreview(htmlContent, container) {
                 margin: 0 0 16px 0;
             }
             
-            /* Lists */
-            ul, ol {
-                margin-top: 0;
-                margin-bottom: 16px;
-                padding-left: 2em;
-            }
+            ul, ol { margin-bottom: 16px; padding-left: 2em; }
             
-            li + li {
-                margin-top: .25em;
-            }
-            
-            /* Tables */
             table {
-                border-spacing: 0;
                 border-collapse: collapse;
-                margin-top: 0;
                 margin-bottom: 16px;
-                width: max-content;
-                max-width: 100%;
-                overflow: auto;
+                width: 100%;
             }
             
-            table th,
-            table td {
+            table th, table td {
                 padding: 6px 13px;
                 border: 1px solid #d0d7de;
             }
             
-            table th {
-                background-color: #f6f8fa;
-                font-weight: 600;
-            }
+            table th { background-color: #f6f8fa; font-weight: 600; }
+            table tr:nth-child(2n) { background-color: #f6f8fa; }
             
-            table tr {
-                background-color: #ffffff;
-                border-top: 1px solid #d0d7de;
-            }
-            
-            table tr:nth-child(2n) {
-                background-color: #f6f8fa;
-            }
-            
-            /* Horizontal rules */
             hr {
                 height: .25em;
                 padding: 0;
@@ -536,35 +525,10 @@ function createIsolatedPreview(htmlContent, container) {
                 border: 0;
             }
             
-            /* Task lists */
-            input[type="checkbox"] {
-                margin: 0 .2em .25em -1.4em;
-                vertical-align: middle;
-            }
-            
-            /* Badges and shields */
-            .badge, .shield {
-                display: inline-block;
-                margin: 2px;
-            }
-            
-            /* Center align common elements */
+            /* Center badges */
             p:has(img[src*="shields.io"]),
-            p:has(img[src*="badge"]),
-            div[align="center"],
-            h1[align="center"],
-            h2[align="center"],
-            h3[align="center"] {
+            p:has(img[src*="badge"]) {
                 text-align: center;
-            }
-            
-            /* Custom GitHub profile elements */
-            .github-profile-trophy,
-            .github-readme-stats,
-            .github-readme-streak-stats {
-                display: block;
-                margin: 16px auto;
-                max-width: 100%;
             }
         </style>
     `;
@@ -578,7 +542,7 @@ function createIsolatedPreview(htmlContent, container) {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Template Preview</title>
+                <title>Preview</title>
                 ${githubStyles}
             </head>
             <body>
@@ -586,22 +550,18 @@ function createIsolatedPreview(htmlContent, container) {
                     ${htmlContent}
                 </div>
                 <script>
-                    // Handle iframe height adjustment
                     function adjustHeight() {
                         const height = document.body.scrollHeight;
                         window.parent.postMessage({type: 'resize', height: height}, '*');
                     }
                     
-                    // Initial adjustment
                     setTimeout(adjustHeight, 100);
                     
-                    // Adjust on image load
                     document.querySelectorAll('img').forEach(img => {
                         img.onload = adjustHeight;
                         img.onerror = adjustHeight;
                     });
                     
-                    // Handle clicks on links
                     document.querySelectorAll('a').forEach(link => {
                         link.addEventListener('click', function(e) {
                             e.preventDefault();
@@ -618,7 +578,7 @@ function createIsolatedPreview(htmlContent, container) {
     // Handle iframe height messages
     window.addEventListener('message', function(event) {
         if (event.data.type === 'resize' && event.source === iframe.contentWindow) {
-            iframe.style.height = Math.min(event.data.height + 20, 800) + 'px';
+            iframe.style.height = Math.min(event.data.height + 40, 800) + 'px';
         }
     });
     
@@ -626,190 +586,385 @@ function createIsolatedPreview(htmlContent, container) {
     container.appendChild(iframe);
 }
 
-function closeModal() {
-    document.getElementById('templateModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+// Copy Markdown to Clipboard
+async function copyMarkdown(username, category) {
+    const template = templates.find(t => t.username === username && t.category === category);
+    if (!template) return;
     
-    event.target.classList.add('active');
-    document.getElementById(tab + 'Content').classList.add('active');
+    try {
+        const filePath = `templates/${category}/${username}.md`;
+        const response = await fetch(filePath);
+        const markdown = await response.text();
+        
+        await navigator.clipboard.writeText(markdown);
+        showNotification('✅ Markdown copied to clipboard!');
+    } catch (error) {
+        console.error('Error copying markdown:', error);
+        showError('Failed to copy markdown. Please try again.');
+    }
 }
 
+// Download template
+async function downloadTemplate(username, category) {
+    const template = templates.find(t => t.username === username && t.category === category);
+    if (!template) return;
+    
+    try {
+        const filePath = `templates/${category}/${username}.md`;
+        const response = await fetch(filePath);
+        const markdown = await response.text();
+        
+        const blob = new Blob([markdown], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${template.username}-profile-readme.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('✅ Template downloaded!');
+    } catch (error) {
+        console.error('Error downloading template:', error);
+        showError('Failed to download template.');
+    }
+}
+
+// Switch modal tabs
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    if (tabName === 'preview') {
+        document.getElementById('previewContent').classList.add('active');
+    } else if (tabName === 'code') {
+        document.getElementById('codeContent').classList.add('active');
+    }
+}
+
+// Copy code from code tab
 async function copyCode() {
     const codeElement = document.getElementById('rawCode');
+    if (!codeElement) return;
+    
     try {
         await navigator.clipboard.writeText(codeElement.textContent);
-        showCopyFeedback(event.target, '✅ Copied!');
-    } catch (err) {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy. Please try manually.');
+        showNotification('✅ Code copied to clipboard!');
+    } catch (error) {
+        console.error('Error copying code:', error);
+        showError('Failed to copy code.');
     }
 }
 
-function updateFilterButtons() {
-    const filterContainer = document.querySelector('.filter-tags');
-    const categoryCounts = {};
-    
-    state.templates.forEach(t => {
-        categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1;
-    });
-    
-    filterContainer.innerHTML = '';
-    
-    const allBtn = createFilterButton('all', 'All', '🌟', state.templates.length);
-    filterContainer.appendChild(allBtn);
-    
-    Object.entries(categoryConfig)
-        .filter(([key]) => categoryCounts[key] > 0)
-        .forEach(([key, data]) => {
-            const btn = createFilterButton(key, data.name.replace(/^[^\s]+\s/, ''), data.emoji, categoryCounts[key]);
-            filterContainer.appendChild(btn);
-        });
-    
-    setActiveFilter('all');
+// Modal Controls
+function openModal() {
+    templateModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-function createFilterButton(category, name, emoji, count) {
-    const button = document.createElement('button');
-    button.className = 'tag-btn';
-    button.dataset.category = category;
-    button.innerHTML = `${emoji} ${name} (${count})`;
-    
-    button.addEventListener('click', () => {
-        state.currentFilter = category;
-        setActiveFilter(category);
-        applyFilters();
-        renderTemplates();
-    });
-    
-    return button;
+function closeModal() {
+    templateModal.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
-function setActiveFilter(category) {
-    document.querySelectorAll('.tag-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.category === category);
-    });
-}
-
-function setupEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    let searchTimeout;
-    
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            state.searchTerm = this.value.toLowerCase();
-            applyFilters();
-            renderTemplates();
-        }, 300);
-    });
-    
-    const modal = document.getElementById('templateModal');
-    modal.addEventListener('click', e => {
-        if (e.target === modal) closeModal();
-    });
-    
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeModal();
-    });
-    
-    // Scroll to top button functionality
-    const scrollToTopBtn = document.getElementById('scrollToTop');
-    
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            scrollToTopBtn.classList.add('visible');
-        } else {
-            scrollToTopBtn.classList.remove('visible');
-        }
-    });
-}
-
-function resetFilters() {
-    state.currentFilter = 'all';
-    state.searchTerm = '';
-    document.getElementById('searchInput').value = '';
-    setActiveFilter('all');
-    applyFilters();
-    renderTemplates();
-}
-
-function updateStats() {
-    const statsElement = document.getElementById('templateCount');
-    if (statsElement) {
-        statsElement.textContent = state.templates.length;
-    }
-}
-
-async function copyTemplateUrl(templateId) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) return;
-    
-    const url = `${window.location.origin}${window.location.pathname}?template=${templateId}`;
-    
-    try {
-        await navigator.clipboard.writeText(url);
-        showCopyFeedback(event.target, '✅ Copied!');
-    } catch (err) {
-        console.error('Failed to copy:', err);
-    }
-}
-
-function showCopyFeedback(button, message) {
-    const original = button.innerHTML;
-    button.innerHTML = message;
-    button.style.background = 'var(--success-color)';
+// Notification System
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification success';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(notification);
     
     setTimeout(() => {
-        button.innerHTML = original;
-        button.style.background = '';
-    }, 2000);
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
-async function downloadTemplate(templateId) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) return;
+function showError(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification error';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ef4444;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(notification);
     
-    const content = await loadTemplateContent(templateId);
-    if (!content) {
-        alert('Failed to load template content');
-        return;
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Event Listeners
+function setupEventListeners() {
+    // Theme toggle
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
     }
     
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${template.id}-readme.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Search
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            currentFilters.search = e.target.value;
+            filterTemplates();
+        });
+    }
+    
+    // Category filter
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+            currentFilters.category = e.target.value;
+            filterTemplates();
+        });
+    }
+    
+    // Reset filters
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+    
+    // Clear search button
+    const clearSearchBtn = document.getElementById('clearSearch');
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', resetFilters);
+    }
+    
+    // Modal close
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', closeModal);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === '/' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            if (searchInput) searchInput.focus();
+        }
+    });
+    
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
 }
 
-function showContributeModal() {
-    const modal = document.getElementById('contributeModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+// Utility Functions
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+function updateTemplateCount() {
+    const countElement = document.getElementById('templateCount');
+    if (countElement && metadata) {
+        countElement.textContent = `${metadata.totalTemplates}+`;
     }
 }
 
-function closeContributeModal() {
-    const modal = document.getElementById('contributeModal');
-    if (modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = 'auto';
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
-}
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    .template-details {
+        max-width: 100%;
+    }
+    
+    .template-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .template-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .difficulty-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .difficulty-badge.difficulty-beginner {
+        background-color: #10b981;
+    }
+    
+    .difficulty-badge.difficulty-intermediate {
+        background-color: #f59e0b;
+    }
+    
+    .difficulty-badge.difficulty-advanced {
+        background-color: #ef4444;
+    }
+    
+    .template-features {
+        margin: 1.5rem 0;
+    }
+    
+    .template-features ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .template-features li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+    }
+    
+    .template-features li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #10b981;
+        font-weight: bold;
+    }
+    
+    .template-actions-modal {
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0;
+        flex-wrap: wrap;
+    }
+    
+    .markdown-preview,
+    .markdown-code {
+        margin-top: 2rem;
+    }
+    
+    .markdown-code pre {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        max-height: 400px;
+    }
+    
+    .template-preview-wrapper {
+        width: 100%;
+    }
+    
+    .template-details-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .markdown-preview-container {
+        width: 100%;
+        min-height: 200px;
+    }
+    
+    .markdown-preview-container iframe {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+`;
+document.head.appendChild(style);
 
+// Scroll to Top functionality
 function scrollToTop() {
     window.scrollTo({
         top: 0,
         behavior: 'smooth'
     });
 }
+
+// Show/hide scroll to top button
+window.addEventListener('scroll', () => {
+    const scrollBtn = document.getElementById('scrollToTop');
+    if (scrollBtn) {
+        if (window.pageYOffset > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    }
+});
+

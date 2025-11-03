@@ -3,41 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Awesome collection of GitHub profile README templates. Browse, preview, and download beautiful templates to make your profile stand out.">
-    <meta name="keywords" content="github profile, readme templates, markdown, developer portfolio, github pages">
-    <meta name="author" content="Community Contributors">
+    <meta name="description" content="A curated collection of awesome GitHub Profile README templates - Browse, preview, and customize professional GitHub profile templates">
+    <meta name="keywords" content="github, profile, readme, templates, markdown, github-profile, developer-profile">
+    <meta name="author" content="Z0ZeroX">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://z0zerox.github.io/Awesome-Profile-README-Templates/">
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Awesome GitHub Profile README Templates">
-    <meta property="og:description" content="Browse and download beautiful GitHub profile README templates to make your profile stand out.">
-    <meta property="og:image" content="https://z0zerox.github.io/Awesome-Profile-README-Templates/previews/hero-image.png">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://z0zerox.github.io/Awesome-Profile-README-Templates/">
-    <meta property="twitter:title" content="Awesome GitHub Profile README Templates">
-    <meta property="twitter:description" content="Browse and download beautiful GitHub profile README templates to make your profile stand out.">
-    <meta property="twitter:image" content="https://z0zerox.github.io/Awesome-Profile-README-Templates/previews/hero-image.png">
+    <meta property="og:description" content="A curated collection of beautiful, creative, and diverse README templates for your GitHub Profile">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://z0zerox.github.io/Awesome-Profile-README-Templates">
     
-    <title>Awesome GitHub Profile README Templates</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/5.1.1/marked.min.js"></script>
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Awesome GitHub Profile README Templates">
+    <meta name="twitter:description" content="Make your GitHub profile stand out with our curated template collection">
+    
+    <title>Awesome GitHub Profile README Templates | Stand Out on GitHub</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="header-text">
-                    <h1 class="logo">🚀 GitHub Profile README Templates</h1>
-                    <p class="subtitle">Awesome collection of GitHub profile README templates to make your profile stand out</p>
+                <div class="logo">
+                    <span class="logo-icon">🎨</span>
+                    <h1>Awesome Profile README Templates</h1>
+                </div>
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#templates" class="nav-link">Templates</a>
+                    <a href="#contribute" class="nav-link">Contribute</a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates" class="nav-link" target="_blank" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">Make Your GitHub Profile Stand Out ✨</h2>
+                <p class="hero-subtitle">A curated collection of beautiful, creative, and diverse README templates for your GitHub Profile</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="templateCount">800+</span>
+                        <span class="stat-label">Templates</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">9+</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Free</span>
+                    </div>
                 </div>
                 <div class="header-actions">
                     <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates" target="_blank" class="btn btn-header" title="View Repository">
@@ -58,117 +111,162 @@
                         </svg>
                         Fork
                     </a>
-                    <button class="btn btn-header btn-contribute" onclick="showContributeModal()" title="Contribute Template">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M7.75 2a.75.75 0 01.75.75V7h4.25a.75.75 0 110 1.5H8.5v4.25a.75.75 0 11-1.5 0V8.5H2.75a.75.75 0 010-1.5H7V2.75A.75.75 0 017.75 2z"></path>
-                        </svg>
-                        Contribute
-                    </button>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/blob/main/CONTRIBUTING.md" target="_blank" class="btn btn-header" title="Contribute Template">
+                         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                             <path d="M7.75 2a.75.75 0 01.75.75V7h4.25a.75.75 0 110 1.5H8.5v4.25a.75.75 0 11-1.5 0V8.5H2.75a.75.75 0 010-1.5H7V2.75A.75.75 0 017.75 2z"></path>
+                         </svg>
+                         Contribute
+                     </a>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
-    <main class="main">
+    <!-- Search and Filter Section -->
+    <section class="filters" id="templates">
         <div class="container">
-            <div class="search-section">
-                <input type="text" id="searchInput" placeholder="🔍 Search templates by name, author, tags, or features..." class="search-input">
-                <div class="filter-tags">
-                    <!-- Filter buttons will be generated dynamically -->
+            <div class="filters-content">
+                <div class="search-box">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search templates by name or author..." 
+                        class="search-input"
+                        aria-label="Search templates">
                 </div>
-                <div class="stats-info" id="statsInfo" style="text-align: center; margin-top: 16px; color: var(--secondary-color); font-size: 0.9rem;">
-                    <span id="templateCount">Loading...</span> templates available
+                
+                <div class="filter-group">
+                    <label for="categoryFilter" class="filter-label">Category:</label>
+                    <select id="categoryFilter" class="filter-select" aria-label="Filter by category">
+                        <option value="all">All Categories</option>
+                        <!-- Categories will be loaded dynamically from JSON -->
+                    </select>
                 </div>
+                
+                <button class="btn btn-small btn-outline" id="resetFilters">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                        <path d="M21 3v5h-5"/>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                        <path d="M3 21v-5h5"/>
+                    </svg>
+                    Reset
+                </button>
             </div>
+            
+            <!-- Results Info -->
+            <div class="results-info">
+                <span id="resultsCount">Loading templates...</span>
+            </div>
+            
+            <!-- Active Tags -->
+            <div class="active-tags" id="activeTags"></div>
+        </div>
+    </section>
 
+    <!-- Templates Gallery -->
+    <section class="gallery">
+        <div class="container">
+            <div class="gallery-header">
+                <h3 class="section-title">Discover Templates</h3>
+                <p class="section-subtitle">Choose a template and customize it for your GitHub profile</p>
+            </div>
+            
             <div class="templates-grid" id="templatesGrid">
-                <!-- Templates will be loaded here -->
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal for template preview -->
-    <div id="templateModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle"></h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('preview')">Preview</button>
-                    <button class="tab-btn" onclick="switchTab('code')">Code</button>
+                <!-- Templates will be loaded dynamically -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading awesome templates...</p>
                 </div>
-                <div id="previewContent" class="tab-content active"></div>
-                <div id="codeContent" class="tab-content">
-                    <pre><code id="rawCode"></code></pre>
-                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+            </div>
+            
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-content">
+                    <span class="no-results-icon">🔍</span>
+                    <h4>No templates found</h4>
+                    <p>Try adjusting your search or filters</p>
+                    <button class="btn btn-primary" id="clearSearch">Clear Search</button>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <!-- Contribute Section -->
+    <section class="contribute" id="contribute">
+        <div class="container">
+            <div class="cta">
+                <h3>Want to Contribute?</h3>
+                <p>Help us grow this collection by submitting your own templates or improving existing ones!</p>
+                <div class="cta-actions">
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/blob/main/CONTRIBUTING.md" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                        📖 Contributing Guide
+                    </a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/fork" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+                        🍴 Fork Repository
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Awesome GitHub Profile README Templates. Made with ❤️ for the developer community.</p>
-            <p>
-                <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates" target="_blank">🌟 GitHub Repository</a> |
-                <a href="#contribute" onclick="showContributeModal()">📝 Contribute Templates</a> |
-                <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues" target="_blank">🐛 Report Issue</a>
-            </p>
-            <div class="contribution-stats" style="margin-top: 16px; font-size: 0.9rem; color: rgba(255,255,255,0.8);">
-                <span id="contributorCount">🧑‍💻 Community-driven project!</span> • 
-                <span id="lastUpdate">🔄 Auto-updates from repository</span>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Awesome Profile README Templates</h4>
+                    <p>Making GitHub profiles beautiful, one template at a time.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                            <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h5>Resources</h5>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates" target="_blank" rel="noopener noreferrer">🌟 GitHub Repository</a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">📖 Contributing Guide</a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/issues" target="_blank" rel="noopener noreferrer">🐛 Report Issue</a>
+                </div>
+                <div class="footer-section">
+                    <h5>Community</h5>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/discussions" target="_blank" rel="noopener noreferrer">💬 Discussions</a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/graphs/contributors" target="_blank" rel="noopener noreferrer">👥 Contributors</a>
+                    <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/stargazers" target="_blank" rel="noopener noreferrer">⭐ Stargazers</a>
+                </div>
             </div>
-            <!-- <div class="contribution-stats" style="margin-top: 16px; font-size: 0.9rem; color: rgba(255,255,255,0.8);">
-                <span id="contributorCount">🧑‍💻 Loading contributors...</span> • 
-                <span id="lastUpdate">🔄 Auto-synced with GitHub</span> • 
-                <span id="githubStats">⭐ Loading repository stats...</span>
-            </div> -->
+            <div class="footer-bottom">
+                <p>&copy; 2025 Awesome Profile README Templates. Licensed under <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></p>
+                <p>Made with ❤️ by the open-source community</p>
+            </div>
         </div>
     </footer>
 
-    <!-- Contribute Modal -->
-    <div id="contributeModal" class="modal">
+    <!-- Modal for viewing template -->
+    <div class="modal" id="templateModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>🚀 Contribute Your Template</h2>
-                <button class="close-btn" onclick="closeContributeModal()">&times;</button>
+            <div class="modal-header-bar">
+                <h2 id="modalTitle">Template Preview</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="switchTab('preview')">👁️ Preview</button>
+                <button class="tab-btn" onclick="switchTab('code')">💻 Code</button>
             </div>
             <div class="modal-body">
-                <div class="contribution-guide">
-                    <h3>📝 How to Contribute</h3>
-                    <ol>
-                        <li><strong>Fork the Repository</strong>: Fork the main repository on GitHub</li>
-                        <li><strong>Add Your Template</strong>: Create your <code>.md</code> file in the appropriate category folder:
-                            <ul>
-                                <li><code>templates/minimalistic/</code> - Clean and simple designs</li>
-                                <li><code>templates/showcase-collections/</code> - Comprehensive showcase profiles</li>
-                                <li><code>templates/creative-artistic/</code> - Creative and artistic templates</li>
-                                <li><code>templates/code-focused/</code> - Developer and tech-focused</li>
-                                <li><code>templates/data-visual/</code> - Stats and data-driven</li>
-                                <li><code>templates/dynamic-interactive/</code> - Interactive content</li>
-                                <li><code>templates/media-rich/</code> - Rich media and multimedia</li>
-                                <li><code>templates/badges-icons/</code> - Badge and icon focused</li>
-                                <li><code>templates/others/</code> - Unique and misc templates</li>
-                            </ul>
-                        </li>
-                        <li><strong>File Naming</strong>: Use your GitHub username as filename: <code>your-username.md</code></li>
-                        <li><strong>Submit PR</strong>: Create a pull request with your template</li>
-                        <li><strong>Auto-Update</strong>: Once merged, the site will automatically detect and display your template!</li>
-                    </ol>
-
-                    <h3>✅ Detailed Guidelines</h3>
-                    <p>For detailed contribution guidelines, please refer to the <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/blob/main/CONTRIBUTING.md" target="_blank">Template Guide</a>.</p>
-
-                    <div class="contribution-actions">
-                        <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/fork" target="_blank" class="btn btn-primary">
-                            🍴 Fork Repository
-                        </a>
-                        <a href="https://github.com/Z0ZeroX/Awesome-Profile-README-Templates/tree/main/templates" target="_blank" class="btn btn-secondary">
-                            📁 Browse Categories
-                        </a>
-                    </div>
+                <div id="previewContent" class="tab-content active">
+                    <!-- Preview will be loaded here -->
+                </div>
+                <div id="codeContent" class="tab-content">
+                    <pre><code id="rawCode"></code></pre>
+                    <button class="copy-btn" onclick="copyCode()">Copy Code</button>
                 </div>
             </div>
         </div>
@@ -181,6 +279,10 @@
         </svg>
     </button>
 
-    <script src="./scripts/script.js"></script>
+    <!-- Scripts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 </html>

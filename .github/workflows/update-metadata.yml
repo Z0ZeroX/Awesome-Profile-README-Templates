@@ -28,21 +28,17 @@ jobs:
           echo "🔍 Running metadata generation..."
           node scripts/generate-metadata.js
           echo "📁 Checking if file was created..."
-          ls -la templates-metadata.json || echo "❌ File not found!"
+          ls -la data/templates.json || echo "❌ File not found!"
 
       - name: Check for changes
         id: git-check
         run: |
           echo "📋 Git status before adding:"
           git status
-          if [ -f "templates-metadata.json" ]; then
-            git add templates-metadata.json
-            echo "📋 Git status after adding:"
-            git status
-            git diff --staged --exit-code templates-metadata.json || echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "❌ templates-metadata.json not found, skipping"
-          fi
+          git add data/templates.json 2>/dev/null || true
+          echo "📋 Git status after adding:"
+          git status
+          git diff --staged --exit-code data/templates.json || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit and push if changed
         if: steps.git-check.outputs.changed == 'true'
