@@ -153,28 +153,33 @@ function renderTemplates() {
             ? template.preview_url
             : 'previews/default-preview.svg';
         
-        const templateId = `${template.category}-${template.username}`;
-        
+        const safeUsername = escapeHtml(template.username);
+        const safeCategory = escapeHtml(template.category);
+        const safePreviewImage = escapeHtml(
+            template.preview_url && template.preview_url !== 'false' && template.preview_url !== false
+                ? template.preview_url
+                : 'previews/default-preview.svg'
+        );
         return `
-            <div class="template-card" data-username="${template.username}" data-category="${template.category}">
+            <div class="template-card" data-username="${safeUsername}" data-category="${safeCategory}">
                 <div class="template-category-badge">${formatCategoryName(template.category)}</div>
                 <div class="template-preview-image">
                     <img 
-                        src="${previewImage}" 
-                        alt="${template.username} preview"
+                        src="${safePreviewImage}" 
+                        alt="${safeUsername} preview"
                         loading="lazy"
                         onerror="this.src='previews/default-preview.svg'"
                     >
                 </div>
                 <div class="template-content">
                     <div class="template-header">
-                        <h3 class="template-title">${escapeHtml(template.username)}</h3>
+                        <h3 class="template-title">${safeUsername}</h3>
                     </div>
                     
                     <div class="template-tags">
                         ${template.tags && template.tags.length > 0 
                             ? template.tags.slice(0, 6).map(tag => 
-                                `<span class="template-tag" onclick="event.stopPropagation(); addTagFilter('${escapeHtml(tag)}')" title="Filter by ${escapeHtml(tag)}">#${escapeHtml(tag)}</span>`
+                                `<span class="template-tag" data-tag="${escapeHtml(tag)}" title="Filter by ${escapeHtml(tag)}">#${escapeHtml(tag)}</span>`
                             ).join('') 
                             : '<span class="template-tag" style="opacity: 0.5;">#template</span>'}
                     </div>
@@ -185,13 +190,13 @@ function renderTemplates() {
                             <span>${formatCategoryName(template.category).split(' ').slice(1).join(' ')}</span>
                         </div>
                         <div class="template-actions">
-                            <button class="template-action" onclick="event.stopPropagation(); viewTemplate('${template.username}', '${template.category}')" title="Preview Template">
+                            <button class="template-action btn-view-template" title="Preview Template">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                 </svg>
                             </button>
-                            <button class="template-action" onclick="event.stopPropagation(); downloadTemplate('${template.username}', '${template.category}')" title="Download Markdown">
+                            <button class="template-action btn-download-template" title="Download Markdown">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -207,12 +212,22 @@ function renderTemplates() {
     
     updateResultsInfo();
     
-    // Add click event to cards
+    // Add click events to cards using event delegation
     document.querySelectorAll('.template-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            if (!e.target.closest('.template-actions') && !e.target.closest('.template-tag')) {
-                const username = card.dataset.username;
-                const category = card.dataset.category;
+            const username = card.dataset.username;
+            const category = card.dataset.category;
+            if (e.target.closest('.btn-view-template')) {
+                e.stopPropagation();
+                viewTemplate(username, category);
+            } else if (e.target.closest('.btn-download-template')) {
+                e.stopPropagation();
+                downloadTemplate(username, category);
+            } else if (e.target.closest('.template-tag')) {
+                e.stopPropagation();
+                const tag = e.target.closest('.template-tag').dataset.tag;
+                if (tag) addTagFilter(tag);
+            } else if (!e.target.closest('.template-actions')) {
                 viewTemplate(username, category);
             }
         });
@@ -437,7 +452,7 @@ async function renderWithGitHubAPI(markdownContent) {
 function createIsolatedPreview(htmlContent, container, template) {
     const iframe = document.createElement('iframe');
     iframe.style.cssText = 'width: 100%; border: none; background-color: #ffffff; min-height: 600px;';
-    iframe.sandbox = 'allow-scripts allow-same-origin';
+    iframe.sandbox = 'allow-scripts';
     
     // GitHub-authentic CSS styles
     const githubStyles = `
@@ -576,11 +591,13 @@ function createIsolatedPreview(htmlContent, container, template) {
     };
     
     // Handle iframe height messages
-    window.addEventListener('message', function(event) {
+    const messageHandler = function(event) {
         if (event.data.type === 'resize' && event.source === iframe.contentWindow) {
             iframe.style.height = Math.min(event.data.height + 40, 800) + 'px';
         }
-    });
+    };
+    window.addEventListener('message', messageHandler);
+    iframe._messageHandler = messageHandler;
     
     container.innerHTML = '';
     container.appendChild(iframe);
@@ -632,12 +649,12 @@ async function downloadTemplate(username, category) {
 }
 
 // Switch modal tabs
-function switchTab(tabName) {
+function switchTab(tabName, btn) {
     // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
     });
-    event.target.classList.add('active');
+    if (btn) btn.classList.add('active');
     
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -674,6 +691,12 @@ function openModal() {
 function closeModal() {
     templateModal.classList.remove('active');
     document.body.style.overflow = '';
+    // Remove iframe message listener to prevent memory leak
+    const iframe = document.querySelector('#previewContent iframe');
+    if (iframe && iframe._messageHandler) {
+        window.removeEventListener('message', iframe._messageHandler);
+        iframe._messageHandler = null;
+    }
 }
 
 // Notification System

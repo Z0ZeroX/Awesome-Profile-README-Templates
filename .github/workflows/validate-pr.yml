@@ -1,0 +1,99 @@
+# Validate Pull Requests
+name: Validate PR
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Changed files:"
+          echo "$CHANGED"
+
+      - name: Validate template files
+        run: |
+          ERRORS=0
+          CHANGED_FILES="${{ steps.changed-files.outputs.files }}"
+
+          while IFS= read -r file; do
+            # Only check .md files inside templates/
+            if echo "$file" | grep -qE '^templates/.+/.+\.md$'; then
+              echo "✅ Checking: $file"
+
+              # Check file exists (not deleted)
+              if [ ! -f "$file" ]; then
+                continue
+              fi
+
+              # Check path structure: templates/{category}/{username}.md
+              CATEGORY=$(echo "$file" | cut -d'/' -f2)
+              FILENAME=$(basename "$file" .md)
+
+              VALID_CATEGORIES="creative-artistic code-focused dynamic-interactive minimalistic data-visual media-rich badges-icons showcase-collections others"
+              if ! echo "$VALID_CATEGORIES" | grep -qw "$CATEGORY"; then
+                echo "❌ Invalid category '$CATEGORY' in: $file"
+                echo "   Valid categories: $VALID_CATEGORIES"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              # Check filename is lowercase
+              if echo "$FILENAME" | grep -q '[A-Z]'; then
+                echo "❌ Filename must be lowercase: $file"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              # Check Credit line exists
+              if ! grep -qi "Credit:" "$file"; then
+                echo "❌ Missing 'Credit:' line in: $file (required by CONTRIBUTING.md)"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              # Check file is not empty
+              if [ ! -s "$file" ]; then
+                echo "❌ Empty file: $file"
+                ERRORS=$((ERRORS + 1))
+              fi
+
+              echo "   Category: $CATEGORY | File: $FILENAME.md"
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ $ERRORS -gt 0 ]; then
+            echo ""
+            echo "❌ Validation failed with $ERRORS error(s). Please fix and re-push."
+            exit 1
+          else
+            echo ""
+            echo "✅ All template files passed validation!"
+          fi
+
+      - name: Validate metadata generation
+        run: |
+          node scripts/generate-metadata.js
+          echo "✅ Metadata generation successful"
