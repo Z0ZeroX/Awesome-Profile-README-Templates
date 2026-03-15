@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2025-11-03T14:53:56.204Z",
-  "totalTemplates": 813,
+  "lastUpdated": "2026-03-15T01:04:08.214Z",
+  "totalTemplates": 814,
   "totalCategories": 9,
   "categories": {
     "badges-icons": {
@@ -7346,7 +7346,7 @@
       ]
     },
     "minimalistic": {
-      "count": 198,
+      "count": 199,
       "templates": [
         {
           "username": "8bithemant",
@@ -8624,6 +8624,20 @@
             "ai"
           ],
           "preview_url": false
+        },
+        {
+          "username": "gabrielzschmitz",
+          "tags": [
+            "superuser",
+            "inspire",
+            "maildotru",
+            "git",
+            "github",
+            "api",
+            "ai",
+            "go"
+          ],
+          "preview_url": "previews/minimalistic-gabrielzschmitz.png"
         },
         {
           "username": "garimasingh128",
