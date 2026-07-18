@@ -548,47 +548,43 @@ function createIsolatedPreview(htmlContent, container, template) {
         </style>
     `;
     
-    iframe.onload = function() {
-        const doc = iframe.contentDocument || iframe.contentWindow.document;
-        doc.open();
-        doc.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Preview</title>
-                ${githubStyles}
-            </head>
-            <body>
-                <div class="markdown-body">
-                    ${htmlContent}
-                </div>
-                <script>
-                    function adjustHeight() {
-                        const height = document.body.scrollHeight;
-                        window.parent.postMessage({type: 'resize', height: height}, '*');
-                    }
-                    
-                    setTimeout(adjustHeight, 100);
-                    
-                    document.querySelectorAll('img').forEach(img => {
-                        img.onload = adjustHeight;
-                        img.onerror = adjustHeight;
+    // Use srcdoc to safely load HTML content in sandboxed iframe without CORS/origin issues
+    iframe.srcdoc = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Preview</title>
+            ${githubStyles}
+        </head>
+        <body>
+            <div class="markdown-body">
+                ${htmlContent}
+            </div>
+            <script>
+                function adjustHeight() {
+                    const height = document.body.scrollHeight;
+                    window.parent.postMessage({type: 'resize', height: height}, '*');
+                }
+                
+                setTimeout(adjustHeight, 100);
+                
+                document.querySelectorAll('img').forEach(img => {
+                    img.onload = adjustHeight;
+                    img.onerror = adjustHeight;
+                });
+                
+                document.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.open(this.href, '_blank');
                     });
-                    
-                    document.querySelectorAll('a').forEach(link => {
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            window.open(this.href, '_blank');
-                        });
-                    });
-                </script>
-            </body>
-            </html>
-        `);
-        doc.close();
-    };
+                });
+            </script>
+        </body>
+        </html>
+    `;
     
     // Handle iframe height messages
     const messageHandler = function(event) {

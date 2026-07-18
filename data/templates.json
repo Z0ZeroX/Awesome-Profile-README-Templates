@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-03-15T01:04:08.214Z",
-  "totalTemplates": 814,
+  "lastUpdated": "2026-07-18T14:03:00.492Z",
+  "totalTemplates": 815,
   "totalCategories": 9,
   "categories": {
     "badges-icons": {
@@ -10167,7 +10167,7 @@
       ]
     },
     "showcase-collections": {
-      "count": 107,
+      "count": 108,
       "templates": [
         {
           "username": "ANii693",
@@ -10513,6 +10513,21 @@
             "bootstrap"
           ],
           "preview_url": false
+        },
+        {
+          "username": "IvanMurzak",
+          "tags": [
+            "python",
+            "typescript",
+            "c#",
+            "docker",
+            "git",
+            "github",
+            "rest",
+            "ai",
+            "go"
+          ],
+          "preview_url": "previews/showcase-collections-IvanMurzak.png"
         },
         {
           "username": "JessicaLim8",

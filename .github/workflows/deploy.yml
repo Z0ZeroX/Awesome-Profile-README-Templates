@@ -25,13 +25,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        if: contains(toJSON(github.event.commits.*.modified), 'templates/') || contains(toJSON(github.event.commits.*.added), 'templates/') || contains(toJSON(github.event.commits.*.removed), 'templates/')
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
       - name: Generate metadata
-        if: contains(toJSON(github.event.commits.*.modified), 'templates/') || contains(toJSON(github.event.commits.*.added), 'templates/') || contains(toJSON(github.event.commits.*.removed), 'templates/')
         run: node scripts/generate-metadata.js
 
       - name: Commit if changed
